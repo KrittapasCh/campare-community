@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 
 import ProductCard from "@/components/product-card";
 import ProductThumb from "@/components/product-thumb";
+import AddToCartButton from "@/components/cart/add-to-cart-button";
 import StarRating from "@/components/star-rating";
 import WishlistButton from "@/components/wishlist-button";
 import CompareButton from "@/components/compare-button";
@@ -236,6 +237,10 @@ export default async function ProductPage({ params }: { params: Params }) {
                 <span className="font-bold text-brand-600">
                   {formatPrice(l.price)}
                 </span>
+                <AddToCartButton
+                  listingId={l.id}
+                  isOwn={session?.user.id === l.seller_id}
+                />
               </li>
             ))}
           </ul>

@@ -113,7 +113,6 @@ npm run types
 
 ## ที่ยังไม่ได้ทำ (รอบถัดไป)
 
-- [ ] Cart + Checkout (mock payment ตาม wireframe)
 - [ ] Sample Gallery + อัปโหลดรูปผ่าน Supabase Storage
 - [ ] Community ถาม-ตอบ + คอมเมนต์
 - [ ] หน้า Admin — อนุมัติรูป/โพสต์, จัดการสมาชิก
