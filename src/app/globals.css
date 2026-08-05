@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+@theme {
+  /* CamPare Community palette — accent ส้ม #F5A623 */
+  --color-brand-50: #fff8ec;
+  --color-brand-100: #ffeecd;
+  --color-brand-200: #ffd995;
+  --color-brand-300: #ffc25d;
+  --color-brand-400: #f5a623;
+  --color-brand-500: #e8930c;
+  --color-brand-600: #c47407;
+  --color-brand-700: #9c570a;
+  --color-brand-800: #80450f;
+  --color-brand-900: #6a3a10;
+
+  --color-ink-50: #f7f7f8;
+  --color-ink-100: #eeeef0;
+  --color-ink-200: #d9d9de;
+  --color-ink-300: #b8b8c0;
+  --color-ink-400: #8f8f9b;
+  --color-ink-500: #6e6e7b;
+  --color-ink-600: #565663;
+  --color-ink-700: #464651;
+  --color-ink-800: #2c2c34;
+  --color-ink-900: #1a1a20;
+
+  --font-sans: var(--font-plex), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 14px;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  background: #ffffff;
+  color: var(--color-ink-900);
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ซ่อน spinner ของ input[type=number] เวลาใช้ในช่องจำนวนสินค้า */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+/* scrollbar แนวนอนของแถบ compare */
+.scroll-slim::-webkit-scrollbar {
+  height: 6px;
+}
+.scroll-slim::-webkit-scrollbar-thumb {
+  background: var(--color-ink-200);
+  border-radius: 999px;
+}
