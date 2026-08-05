@@ -15,6 +15,14 @@ import type { Profile } from "@/lib/types";
 
 export const metadata: Metadata = { title: "โปรไฟล์ของฉัน" };
 
+const ORDER_STATUS_TH: Record<string, string> = {
+  pending: "รอชำระเงิน",
+  paid: "ชำระเงินแล้ว",
+  shipped: "จัดส่งแล้ว",
+  completed: "สำเร็จ",
+  cancelled: "ยกเลิก",
+};
+
 const TABS = [
   ["about", "ข้อมูลส่วนตัว"],
   ["selling", "ประกาศของฉัน"],
@@ -268,8 +276,17 @@ async function PurchaseTab({ supabase }: { supabase: SupabaseServer }) {
                   <p className="font-semibold">คำสั่งซื้อ #{o.order_no}</p>
                   <p className="text-xs text-ink-500">{formatDate(o.ordered_at)}</p>
                 </div>
-                <span className="rounded-full bg-ink-100 px-3 py-1 text-xs">
-                  {o.status}
+                <span
+                  className={
+                    "rounded-full px-3 py-1 text-xs " +
+                    (o.status === "cancelled"
+                      ? "bg-red-100 text-red-700"
+                      : o.status === "completed" || o.status === "paid"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-ink-100 text-ink-600")
+                  }
+                >
+                  {ORDER_STATUS_TH[o.status] ?? o.status}
                 </span>
               </div>
               <table className="w-full text-sm">

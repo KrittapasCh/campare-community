@@ -115,6 +115,4 @@ npm run types
 
 - [ ] Sample Gallery + อัปโหลดรูปผ่าน Supabase Storage
 - [ ] Community ถาม-ตอบ + คอมเมนต์
-- [ ] หน้า Admin — อนุมัติรูป/โพสต์, จัดการสมาชิก
 - [ ] Notification (แจ้งเตือน wishlist / รีวิวใหม่ / มีคนตอบ)
-- [ ] ฟอร์มเขียนรีวิว และลงประกาศขาย
