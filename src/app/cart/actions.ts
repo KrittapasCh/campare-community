@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { allowSelfPurchase } from "@/lib/flags";
 
 export type CartState = { error?: string; message?: string };
 
@@ -53,7 +54,7 @@ export async function addToCart(
     .maybeSingle();
 
   if (!listing) return { error: "ประกาศนี้ถูกลบไปแล้ว" };
-  if (listing.seller_id === user.id)
+  if (listing.seller_id === user.id && !allowSelfPurchase)
     return { error: "นี่เป็นประกาศของคุณเอง หยิบใส่ตะกร้าไม่ได้" };
   if (listing.status !== "active")
     return { error: "ประกาศนี้ปิดการขายไปแล้ว" };

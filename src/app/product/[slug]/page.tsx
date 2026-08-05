@@ -18,6 +18,7 @@ import {
   getReviews,
 } from "@/lib/queries";
 import { specGroupsFor } from "@/lib/specs";
+import { allowSelfPurchase } from "@/lib/flags";
 import {
   BEST_FOR_LABEL,
   CONDITION_LABEL,
@@ -239,7 +240,7 @@ export default async function ProductPage({ params }: { params: Params }) {
                 </span>
                 <AddToCartButton
                   listingId={l.id}
-                  isOwn={session?.user.id === l.seller_id}
+                  isOwn={session?.user.id === l.seller_id && !allowSelfPurchase}
                 />
               </li>
             ))}
