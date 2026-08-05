@@ -37,6 +37,9 @@ export default async function SiteHeader() {
           <Link className="rounded-lg px-3 py-2 hover:bg-ink-50" href="/compare">
             เปรียบเทียบ
           </Link>
+          <Link className="rounded-lg px-3 py-2 hover:bg-ink-50" href="/gallery">
+            แกลเลอรี
+          </Link>
           <Link className="rounded-lg px-3 py-2 hover:bg-ink-50" href="/sell">
             ลงขาย
           </Link>

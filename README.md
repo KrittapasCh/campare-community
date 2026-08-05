@@ -113,6 +113,5 @@ npm run types
 
 ## ที่ยังไม่ได้ทำ (รอบถัดไป)
 
-- [ ] Sample Gallery + อัปโหลดรูปผ่าน Supabase Storage
 - [ ] Community ถาม-ตอบ + คอมเมนต์
 - [ ] Notification (แจ้งเตือน wishlist / รีวิวใหม่ / มีคนตอบ)
