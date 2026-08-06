@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/user";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
 export type NotificationType =
@@ -40,10 +41,8 @@ export async function getNotifications(limit = 50): Promise<NotificationRow[]> {
   if (!isSupabaseConfigured) return [];
 
   try {
+    const user = await getAuthUser();
     const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
     if (!user) return [];
 
     const { data, error } = await supabase
@@ -64,10 +63,8 @@ export async function getUnreadCount(): Promise<number> {
   if (!isSupabaseConfigured) return 0;
 
   try {
+    const user = await getAuthUser();
     const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
     if (!user) return 0;
 
     const { count } = await supabase

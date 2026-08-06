@@ -1,6 +1,8 @@
 import "server-only";
 
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/user";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { MOCK_BRANDS, MOCK_PRODUCTS } from "@/lib/mock-data";
 import type { Company, Listing, Product, ProductType, Review } from "@/lib/types";
@@ -195,12 +197,10 @@ export async function getWishlistEntry(
 ): Promise<{ target_price: number | null } | null> {
   if (!isSupabaseConfigured) return null;
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await getAuthUser();
     if (!user) return null;
 
+    const supabase = await createClient();
     const { data } = await supabase
       .from("wishlist_items")
       .select("target_price, wishlists!inner ( user_id )")
@@ -214,16 +214,16 @@ export async function getWishlistEntry(
   }
 }
 
-/** ผู้ใช้ปัจจุบัน + profile (null ถ้ายังไม่ล็อกอิน) */
-export async function getCurrentUser() {
-  if (!isSupabaseConfigured) return null;
+/**
+ * ผู้ใช้ปัจจุบัน + profile (null ถ้ายังไม่ล็อกอิน)
+ * แคชต่อ 1 request — header กับตัวหน้าเรียกซ้ำได้โดยไม่ยิง DB ใหม่
+ */
+export const getCurrentUser = cache(async () => {
+  const user = await getAuthUser();
+  if (!user) return null;
+
   try {
     const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return null;
-
     const { data: profile } = await supabase
       .from("profiles")
       .select("*")
@@ -234,4 +234,4 @@ export async function getCurrentUser() {
   } catch {
     return null;
   }
-}
+});

@@ -1,6 +1,8 @@
 import "server-only";
 
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/user";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import type { ItemCondition } from "@/lib/types";
 
@@ -26,16 +28,14 @@ export type CartRow = {
 };
 
 /** ดึงตะกร้าของผู้ใช้ปัจจุบัน — คืน [] ถ้ายังไม่ล็อกอินหรือยังไม่มีตะกร้า */
-export async function getCartItems(): Promise<CartRow[]> {
+export const getCartItems = cache(async (): Promise<CartRow[]> => {
   if (!isSupabaseConfigured) return [];
 
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await getAuthUser();
     if (!user) return [];
 
+    const supabase = await createClient();
     const { data: cart } = await supabase
       .from("carts")
       .select("id")
@@ -106,12 +106,34 @@ export async function getCartItems(): Promise<CartRow[]> {
   } catch {
     return [];
   }
-}
+});
 
-/** จำนวนชิ้นในตะกร้า สำหรับ badge บน header */
+/**
+ * จำนวนชิ้นในตะกร้า สำหรับ badge บน header
+ *
+ * ดึงแค่คอลัมน์ quantity ไม่ join อะไรเลย — badge ต้องการแค่ตัวเลข
+ * (เดิมเรียก getCartItems() ซึ่ง join 3 ตารางทุกครั้งที่โหลดหน้า เปลืองมาก)
+ */
 export async function getCartCount(): Promise<number> {
-  const items = await getCartItems();
-  return items.reduce((sum, i) => sum + i.quantity, 0);
+  if (!isSupabaseConfigured) return 0;
+
+  try {
+    const user = await getAuthUser();
+    if (!user) return 0;
+
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("cart_items")
+      .select("quantity, carts!inner ( user_id )")
+      .eq("carts.user_id", user.id);
+
+    return ((data ?? []) as { quantity: number }[]).reduce(
+      (sum, i) => sum + i.quantity,
+      0
+    );
+  } catch {
+    return 0;
+  }
 }
 
 export function cartTotals(items: CartRow[]) {
