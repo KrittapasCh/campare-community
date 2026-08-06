@@ -19,11 +19,28 @@ npm run dev
 
 ### 2. สร้าง Supabase project
 
-1. ไปที่ https://supabase.com → New project (เลือก region **Southeast Asia (Singapore)** จะเร็วสุด)
-2. เข้า **SQL Editor** แล้วรันไฟล์ตามลำดับ:
-   - `supabase/migrations/0001_schema.sql` — ตาราง, enum, trigger, view
-   - `supabase/migrations/0002_rls.sql` — Row Level Security
-   - `supabase/migrations/0003_seed.sql` — ข้อมูลสินค้าตัวอย่าง
+1. ไปที่ https://supabase.com → New project
+
+   **จำ region ที่เลือกไว้ให้ดี** แล้วตั้ง `regions` ใน `vercel.json` ให้ตรงกัน
+   ปัจจุบันใช้ Northeast Asia (Seoul) → `vercel.json` ตั้งเป็น `icn1`
+   ถ้าเซิร์ฟเวอร์กับฐานข้อมูลอยู่คนละทวีป หน้าเว็บจะช้าขึ้นเป็นวินาที
+
+2. เข้า **SQL Editor** แล้วรันไฟล์ตามลำดับ ห้ามข้าม:
+
+   | ไฟล์ | ได้อะไร |
+   |---|---|
+   | `0001_schema.sql` | ตาราง 25 ตัว, enum, trigger, view |
+   | `0002_rls.sql` | Row Level Security ทุกตาราง |
+   | `0003_seed.sql` | สินค้าตัวอย่าง 14 รายการ |
+   | `0004_fix_signup_trigger.sql` | แก้ username ซ้ำตอนสมัคร + รองรับ OAuth |
+   | `0005_view_security_invoker.sql` | ปิดช่องโหว่ security definer ของ view |
+   | `0006_demo_marketplace.sql` | ประกาศขาย + รีวิวตัวอย่าง (ต้องมี user ก่อน) |
+   | `0007_storage_gallery.sql` | bucket `gallery` + policy อัปโหลดรูป |
+   | `0008_notifications.sql` | trigger แจ้งเตือนผู้ใช้ |
+   | `0009_notify_admins.sql` | trigger แจ้งเตือนผู้ดูแลเมื่อมีของรอตรวจ |
+
+   `0006` ต้องสมัครสมาชิกผ่านหน้าเว็บอย่างน้อย 1 คนก่อนถึงจะรันได้
+
 3. คัดลอก `.env.example` เป็น `.env.local` แล้วใส่ค่าจาก **Project Settings → API**:
 
 ```
