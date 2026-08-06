@@ -18,8 +18,10 @@ export default async function ModerationPage({
   const [photosRes, postsRes] = await Promise.all([
     supabase
       .from("gallery_photos")
+      // ต้องระบุชื่อ FK ให้ชัด เพราะ gallery_photos ชี้ไป products ได้ 2 ทาง
+      // (product_id = กล้อง, lens_id = เลนส์) ถ้าเขียนแค่ products(...) จะ error
       .select(
-        "id, title, image_url, shot_iso, shot_aperture, shot_shutter, shot_focal_mm, created_at, profiles ( display_name ), products ( name, slug )"
+        "id, title, image_url, shot_iso, shot_aperture, shot_shutter, shot_focal_mm, created_at, profiles ( display_name ), products!gallery_photos_product_id_fkey ( name, slug )"
       )
       .eq("status", "pending")
       .eq("is_deleted", false)
