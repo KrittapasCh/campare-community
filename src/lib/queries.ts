@@ -189,6 +189,31 @@ export async function getListings(productId: string): Promise<Listing[]> {
   }
 }
 
+/** รายการโปรดของผู้ใช้ปัจจุบันสำหรับสินค้าชิ้นนี้ (ใช้ดึงราคาเป้าหมายมาแสดง) */
+export async function getWishlistEntry(
+  productId: string
+): Promise<{ target_price: number | null } | null> {
+  if (!isSupabaseConfigured) return null;
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return null;
+
+    const { data } = await supabase
+      .from("wishlist_items")
+      .select("target_price, wishlists!inner ( user_id )")
+      .eq("product_id", productId)
+      .eq("wishlists.user_id", user.id)
+      .maybeSingle();
+
+    return data ? { target_price: data.target_price as number | null } : null;
+  } catch {
+    return null;
+  }
+}
+
 /** ผู้ใช้ปัจจุบัน + profile (null ถ้ายังไม่ล็อกอิน) */
 export async function getCurrentUser() {
   if (!isSupabaseConfigured) return null;

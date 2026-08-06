@@ -16,7 +16,9 @@ import {
   getProductBySlug,
   getRelatedProducts,
   getReviews,
+  getWishlistEntry,
 } from "@/lib/queries";
+import WishlistTarget from "@/components/wishlist-target";
 import { specGroupsFor } from "@/lib/specs";
 import { allowSelfPurchase } from "@/lib/flags";
 import {
@@ -47,11 +49,12 @@ export default async function ProductPage({ params }: { params: Params }) {
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
-  const [related, reviews, listings, session] = await Promise.all([
+  const [related, reviews, listings, session, wishlistEntry] = await Promise.all([
     getRelatedProducts(product),
     getReviews(product.id),
     getListings(product.id),
     getCurrentUser(),
+    getWishlistEntry(product.id),
   ]);
 
   const price = product.market_price ?? product.msrp;
@@ -169,6 +172,13 @@ export default async function ProductPage({ params }: { params: Params }) {
               ขายรุ่นนี้
             </Link>
           </div>
+
+          <WishlistTarget
+            productId={product.id}
+            slug={product.slug}
+            signedIn={!!session}
+            currentTarget={wishlistEntry?.target_price ?? null}
+          />
         </div>
       </div>
 

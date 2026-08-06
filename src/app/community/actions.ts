@@ -89,24 +89,11 @@ export async function addPostComment(
 
   if (error) return { error: `ตอบกระทู้ไม่สำเร็จ: ${error.message}` };
 
-  // แจ้งเตือนเจ้าของกระทู้ (ถ้าไม่ใช่ตัวเองตอบ)
-  const { data: post } = await supabase
-    .from("community_posts")
-    .select("author_id, title")
-    .eq("id", postId)
-    .maybeSingle();
-
-  if (post && post.author_id !== user.id) {
-    await supabase.from("notifications").insert({
-      user_id: post.author_id,
-      type: "question_answered",
-      title: "มีคนตอบกระทู้ของคุณ",
-      body: post.title,
-      link: `/community/${postId}`,
-    });
-  }
+  // การแจ้งเตือนเจ้าของกระทู้ทำโดย trigger comments_notify ใน DB
+  // (ดู supabase/migrations/0008_notifications.sql) — ไม่ต้องยิงจากตรงนี้
 
   revalidatePath(`/community/${postId}`);
+  revalidatePath("/", "layout");
   return { message: "ส่งคำตอบแล้ว" };
 }
 

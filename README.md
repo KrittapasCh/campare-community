@@ -111,6 +111,15 @@ npm run types
 
 ---
 
-## ที่ยังไม่ได้ทำ (รอบถัดไป)
+## สถานะ
 
-- [ ] Notification (แจ้งเตือน wishlist / รีวิวใหม่ / มีคนตอบ) — เขียนแถวลง `notifications` แล้วตอนมีคนตอบกระทู้ เหลือทำหน้าแสดงผล
+ครบทั้ง 10 functional requirements แล้ว — User Management, Product Database,
+Compare System, Sample Gallery, Review System, Marketplace, Favorite/Wishlist,
+Community, Notification, Admin
+
+### ไอเดียต่อยอด (ถ้ามีเวลาเหลือ)
+
+- [ ] AI วิเคราะห์ว่ารุ่นไหนคุ้มกว่าจากสเปก + ราคากลาง
+- [ ] กราฟแนวโน้มราคามือสองย้อนหลัง
+- [ ] แชทระหว่างผู้ซื้อ-ผู้ขาย
+- [ ] Realtime notification ด้วย Supabase Realtime (ตอนนี้อัปเดตตอนโหลดหน้า)
