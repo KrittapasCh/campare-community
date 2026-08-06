@@ -3,14 +3,14 @@
 import { useActionState } from "react";
 import { createPost, type CommunityState } from "@/app/community/actions";
 import SubmitButton from "@/components/auth/submit-button";
-import { PRODUCT_TYPE_LABEL, type Product } from "@/lib/types";
+import { PRODUCT_TYPE_LABEL, type ProductOption } from "@/lib/types";
 
 const initial: CommunityState = {};
 
 const field =
   "mt-1 w-full rounded-lg border border-ink-200 px-3 py-2.5 text-sm outline-none focus:border-brand-400";
 
-export default function PostForm({ products }: { products: Product[] }) {
+export default function PostForm({ products }: { products: ProductOption[] }) {
   const [state, formAction] = useActionState(createPost, initial);
 
   return (

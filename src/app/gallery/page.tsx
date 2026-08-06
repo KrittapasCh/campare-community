@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import ProductThumb from "@/components/product-thumb";
-import { getCurrentUser, getProducts } from "@/lib/queries";
+import { getCurrentUser, getProductOptions } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { formatDate } from "@/lib/format";
@@ -30,7 +30,7 @@ export default async function GalleryPage({
   const supabase = await createClient();
   const [session, products] = await Promise.all([
     getCurrentUser(),
-    getProducts({ type: "camera" }),
+    getProductOptions("camera"),
   ]);
 
   let query = supabase
@@ -97,7 +97,7 @@ export default async function GalleryPage({
         >
           ทั้งหมด
         </Link>
-        {products.map((p) => (
+        {products.slice(0, 20).map((p) => (
           <Link
             key={p.id}
             href={`/gallery?product=${p.id}`}

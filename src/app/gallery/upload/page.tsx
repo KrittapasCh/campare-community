@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 
 import UploadForm from "@/components/gallery/upload-form";
-import { getCurrentUser, getProducts } from "@/lib/queries";
+import { getCurrentUser, getProductOptions } from "@/lib/queries";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
 export const metadata: Metadata = { title: "อัปโหลดภาพตัวอย่าง" };
@@ -21,7 +21,7 @@ export default async function UploadPage() {
   const session = await getCurrentUser();
   if (!session) redirect("/login?next=/gallery/upload");
 
-  const products = await getProducts();
+  const products = await getProductOptions();
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">

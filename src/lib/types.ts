@@ -112,6 +112,17 @@ export type Product = {
   lens_specs?: LensSpecs | null;
 };
 
+/** รูปแบบเบาสำหรับ dropdown / แถบกรอง — ไม่มีสเปกและแบรนด์ */
+export type ProductOption = {
+  id: string;
+  slug: string;
+  name: string;
+  product_no: string;
+  product_type: ProductType;
+  msrp: number | null;
+  market_price: number | null;
+};
+
 export type Review = {
   id: string;
   product_id: string;

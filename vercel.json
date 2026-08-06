@@ -1,7 +1,4 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-
-  "//": "icn1 = โซล เท่ากับ region ของ Supabase (ap-northeast-2) — วางเซิร์ฟเวอร์ไว้ข้าง DB",
-  "//2": "ถ้าย้าย Supabase ไป Singapore เมื่อไหร่ ให้เปลี่ยนตรงนี้เป็น sin1 ด้วย",
   "regions": ["icn1"]
 }

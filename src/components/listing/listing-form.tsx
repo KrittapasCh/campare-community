@@ -8,7 +8,7 @@ import {
   CONDITION_LABEL,
   PRODUCT_TYPE_LABEL,
   type ItemCondition,
-  type Product,
+  type ProductOption,
 } from "@/lib/types";
 
 const initial: FormState = {};
@@ -20,7 +20,7 @@ export default function ListingForm({
   products,
   defaultProductSlug,
 }: {
-  products: Product[];
+  products: ProductOption[];
   defaultProductSlug?: string;
 }) {
   const [state, formAction] = useActionState(createListing, initial);

@@ -5,7 +5,7 @@ import { useActionState, useRef, useState } from "react";
 import { createPhoto, type GalleryState } from "@/app/gallery/actions";
 import SubmitButton from "@/components/auth/submit-button";
 import { createClient } from "@/lib/supabase/client";
-import { PRODUCT_TYPE_LABEL, type Product } from "@/lib/types";
+import { PRODUCT_TYPE_LABEL, type ProductOption } from "@/lib/types";
 
 const initial: GalleryState = {};
 
@@ -14,7 +14,7 @@ const field =
 
 const MAX_MB = 10;
 
-export default function UploadForm({ products }: { products: Product[] }) {
+export default function UploadForm({ products }: { products: ProductOption[] }) {
   const [state, formAction] = useActionState(createPhoto, initial);
 
   const [preview, setPreview] = useState<string | null>(null);

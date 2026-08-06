@@ -5,14 +5,38 @@ import { createClient } from "@/lib/supabase/server";
 import { getAuthUser } from "@/lib/supabase/user";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { MOCK_BRANDS, MOCK_PRODUCTS } from "@/lib/mock-data";
-import type { Company, Listing, Product, ProductType, Review } from "@/lib/types";
+import type {
+  Company,
+  Listing,
+  Product,
+  ProductOption,
+  ProductType,
+  Review,
+} from "@/lib/types";
 
-const PRODUCT_SELECT = `
+/** ใช้กับหน้ารายละเอียดและหน้าเปรียบเทียบ — ต้องการสเปกครบ */
+const PRODUCT_FULL_SELECT = `
   id, slug, product_no, name, product_type, company_id, announced_date, status,
   msrp, market_price, thumbnail_url, summary, best_for, highlight, avg_rating, review_count,
   companies ( id, name, slug, country, logo_url ),
   camera_specs ( * ),
   lens_specs ( * )
+`;
+
+/**
+ * ใช้กับหน้าที่แสดงเป็นการ์ด/รายการ — ไม่ join ตารางสเปก
+ * การ์ดสินค้าไม่ได้ใช้สเปกสักช่อง การลาก camera_specs มาด้วยทุกแถว
+ * ทำให้ payload ใหญ่ขึ้นหลายเท่าโดยเปล่าประโยชน์
+ */
+const PRODUCT_LIST_SELECT = `
+  id, slug, product_no, name, product_type, company_id, announced_date, status,
+  msrp, market_price, thumbnail_url, summary, best_for, highlight, avg_rating, review_count,
+  companies ( id, name, slug, country, logo_url )
+`;
+
+/** เบาที่สุด — สำหรับ dropdown เลือกสินค้าและแถบกรอง */
+const PRODUCT_OPTION_SELECT = `
+  id, slug, name, product_no, product_type, msrp, market_price
 `;
 
 export type ProductFilters = {
@@ -74,14 +98,16 @@ function applyFiltersLocally(items: Product[], f: ProductFilters) {
   return sorted;
 }
 
-export async function getProducts(f: ProductFilters = {}): Promise<Product[]> {
+export const getProducts = cache(async function getProducts(
+  f: ProductFilters = {}
+): Promise<Product[]> {
   if (!isSupabaseConfigured) return applyFiltersLocally(MOCK_PRODUCTS, f);
 
   try {
     const supabase = await createClient();
     let query = supabase
       .from("products")
-      .select(PRODUCT_SELECT)
+      .select(PRODUCT_LIST_SELECT)
       .eq("is_deleted", false);
 
     if (f.q) query = query.ilike("name", `%${f.q}%`);
@@ -101,7 +127,44 @@ export async function getProducts(f: ProductFilters = {}): Promise<Product[]> {
   } catch {
     return applyFiltersLocally(MOCK_PRODUCTS, f);
   }
-}
+});
+
+/** รายการสินค้าแบบเบา สำหรับ dropdown และแถบกรอง */
+export const getProductOptions = cache(async function getProductOptions(
+  type?: ProductType
+): Promise<ProductOption[]> {
+  if (!isSupabaseConfigured) {
+    const list = type
+      ? MOCK_PRODUCTS.filter((p) => p.product_type === type)
+      : MOCK_PRODUCTS;
+    return list.map((p) => ({
+      id: p.id,
+      slug: p.slug,
+      name: p.name,
+      product_no: p.product_no,
+      product_type: p.product_type,
+      msrp: p.msrp,
+      market_price: p.market_price,
+    }));
+  }
+
+  try {
+    const supabase = await createClient();
+    let query = supabase
+      .from("products")
+      .select(PRODUCT_OPTION_SELECT)
+      .eq("is_deleted", false)
+      .order("name");
+
+    if (type) query = query.eq("product_type", type);
+
+    const { data, error } = await query.limit(300);
+    if (error) throw error;
+    return (data ?? []) as unknown as ProductOption[];
+  } catch {
+    return [];
+  }
+});
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   if (!isSupabaseConfigured)
@@ -111,7 +174,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     const supabase = await createClient();
     const { data, error } = await supabase
       .from("products")
-      .select(PRODUCT_SELECT)
+      .select(PRODUCT_FULL_SELECT)
       .eq("slug", slug)
       .eq("is_deleted", false)
       .maybeSingle();
@@ -122,11 +185,37 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   }
 }
 
+/**
+ * ดึงสินค้าตาม slug ที่ระบุ — ใช้ในหน้าเปรียบเทียบ
+ * ต้องใช้ PRODUCT_FULL_SELECT เพราะหน้านี้เอาสเปกมาเทียบกันจริง ๆ
+ * แต่ยิงเฉพาะ 2-4 รุ่นที่เลือก ไม่ใช่ดึงทั้งแคตตาล็อกมาแล้วค่อยกรอง
+ */
 export async function getProductsBySlugs(slugs: string[]): Promise<Product[]> {
   if (!slugs.length) return [];
-  const all = await getProducts();
-  const bySlug = new Map(all.map((p) => [p.slug, p]));
-  return slugs.map((s) => bySlug.get(s)).filter((p): p is Product => !!p);
+
+  if (!isSupabaseConfigured) {
+    const bySlug = new Map(MOCK_PRODUCTS.map((p) => [p.slug, p]));
+    return slugs.map((s) => bySlug.get(s)).filter((p): p is Product => !!p);
+  }
+
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("products")
+      .select(PRODUCT_FULL_SELECT)
+      .in("slug", slugs)
+      .eq("is_deleted", false);
+    if (error) throw error;
+
+    // เรียงตามลำดับที่ผู้ใช้เลือกไว้ ไม่ใช่ลำดับที่ DB คืนมา
+    const bySlug = new Map(
+      ((data ?? []) as unknown as Product[]).map((p) => [p.slug, p])
+    );
+    return slugs.map((s) => bySlug.get(s)).filter((p): p is Product => !!p);
+  } catch {
+    const bySlug = new Map(MOCK_PRODUCTS.map((p) => [p.slug, p]));
+    return slugs.map((s) => bySlug.get(s)).filter((p): p is Product => !!p);
+  }
 }
 
 export async function getRelatedProducts(p: Product, limit = 4) {

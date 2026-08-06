@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 
 import ListingForm from "@/components/listing/listing-form";
-import { getCurrentUser, getProducts } from "@/lib/queries";
+import { getCurrentUser, getProductOptions } from "@/lib/queries";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
 export const metadata: Metadata = { title: "ลงประกาศขาย" };
@@ -32,7 +32,7 @@ export default async function SellPage({
   if (!session) redirect("/login?next=/sell");
 
   const sp = await searchParams;
-  const products = await getProducts();
+  const products = await getProductOptions();
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
