@@ -3,14 +3,14 @@
 import { useActionState } from "react";
 import { createPost, type CommunityState } from "@/app/community/actions";
 import SubmitButton from "@/components/auth/submit-button";
-import { PRODUCT_TYPE_LABEL, type ProductOption } from "@/lib/types";
+import ProductPicker from "@/components/product-picker";
 
 const initial: CommunityState = {};
 
 const field =
   "mt-1 w-full rounded-lg border border-ink-200 px-3 py-2.5 text-sm outline-none focus:border-brand-400";
 
-export default function PostForm({ products }: { products: ProductOption[] }) {
+export default function PostForm() {
   const [state, formAction] = useActionState(createPost, initial);
 
   return (
@@ -61,19 +61,10 @@ export default function PostForm({ products }: { products: ProductOption[] }) {
         />
       </div>
 
-      <div>
-        <label htmlFor="product_id" className="text-sm font-medium">
-          เกี่ยวกับสินค้ารุ่นไหน
-        </label>
-        <select id="product_id" name="product_id" defaultValue="" className={field}>
-          <option value="">— ไม่เจาะจงรุ่น —</option>
-          {products.map((p) => (
-            <option key={p.id} value={p.id}>
-              [{PRODUCT_TYPE_LABEL[p.product_type]}] {p.name}
-            </option>
-          ))}
-        </select>
-      </div>
+      <ProductPicker
+        label="เกี่ยวกับสินค้ารุ่นไหน"
+        hint="เว้นว่างได้ถ้าไม่ได้ถามถึงรุ่นใดรุ่นหนึ่ง"
+      />
 
       <div>
         <label htmlFor="tags" className="text-sm font-medium">

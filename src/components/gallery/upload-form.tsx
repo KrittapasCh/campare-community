@@ -4,8 +4,8 @@ import Image from "next/image";
 import { useActionState, useRef, useState } from "react";
 import { createPhoto, type GalleryState } from "@/app/gallery/actions";
 import SubmitButton from "@/components/auth/submit-button";
+import ProductPicker from "@/components/product-picker";
 import { createClient } from "@/lib/supabase/client";
-import { PRODUCT_TYPE_LABEL, type ProductOption } from "@/lib/types";
 
 const initial: GalleryState = {};
 
@@ -14,7 +14,7 @@ const field =
 
 const MAX_MB = 10;
 
-export default function UploadForm({ products }: { products: ProductOption[] }) {
+export default function UploadForm() {
   const [state, formAction] = useActionState(createPhoto, initial);
 
   const [preview, setPreview] = useState<string | null>(null);
@@ -23,8 +23,6 @@ export default function UploadForm({ products }: { products: ProductOption[] }) 
   const [uploadError, setUploadError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const cameras = products.filter((p) => p.product_type === "camera");
-  const lenses = products.filter((p) => p.product_type === "lens");
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -150,29 +148,18 @@ export default function UploadForm({ products }: { products: ProductOption[] }) 
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <label className="block">
-          <span className="text-sm font-medium">ถ่ายด้วยกล้อง</span>
-          <select name="product_id" className={field} defaultValue="">
-            <option value="">— ไม่ระบุ —</option>
-            {cameras.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label className="block">
-          <span className="text-sm font-medium">เลนส์ที่ใช้</span>
-          <select name="lens_id" className={field} defaultValue="">
-            <option value="">— ไม่ระบุ —</option>
-            {lenses.map((p) => (
-              <option key={p.id} value={p.id}>
-                [{PRODUCT_TYPE_LABEL[p.product_type]}] {p.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        <ProductPicker
+          name="product_id"
+          type="camera"
+          label="ถ่ายด้วยกล้อง"
+          hint="เว้นว่างได้ถ้าไม่อยากระบุ"
+        />
+        <ProductPicker
+          name="lens_id"
+          type="lens"
+          label="เลนส์ที่ใช้"
+          hint="เว้นว่างได้ถ้าไม่อยากระบุ"
+        />
       </div>
 
       <section>

@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 
 import ListingForm from "@/components/listing/listing-form";
-import { getCurrentUser, getProductOptions } from "@/lib/queries";
+import { getCurrentUser, getProductOptionBySlug } from "@/lib/queries";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
 export const metadata: Metadata = { title: "ลงประกาศขาย" };
@@ -32,7 +32,11 @@ export default async function SellPage({
   if (!session) redirect("/login?next=/sell");
 
   const sp = await searchParams;
-  const products = await getProductOptions();
+  // ไม่ต้องดึงสินค้าทั้งหมดมาอีกแล้ว — ช่องเลือกรุ่นค้นหาจากเซิร์ฟเวอร์ตอนพิมพ์
+  // ดึงแค่รุ่นที่ส่งมาทาง ?product= เพื่อเลือกไว้ให้ล่วงหน้า
+  const defaultProduct = sp.product
+    ? await getProductOptionBySlug(sp.product)
+    : null;
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
@@ -43,7 +47,7 @@ export default async function SellPage({
       </p>
 
       <div className="mt-6">
-        <ListingForm products={products} defaultProductSlug={sp.product} />
+        <ListingForm defaultProduct={defaultProduct} />
       </div>
     </div>
   );

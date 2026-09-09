@@ -1,12 +1,12 @@
 "use client";
 
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useState } from "react";
 import { createListing, type FormState } from "@/app/sell/actions";
 import SubmitButton from "@/components/auth/submit-button";
+import ProductPicker from "@/components/product-picker";
 import { formatPrice } from "@/lib/format";
 import {
   CONDITION_LABEL,
-  PRODUCT_TYPE_LABEL,
   type ItemCondition,
   type ProductOption,
 } from "@/lib/types";
@@ -17,23 +17,14 @@ const field =
   "mt-1 w-full rounded-lg border border-ink-200 px-3 py-2.5 text-sm outline-none focus:border-brand-400";
 
 export default function ListingForm({
-  products,
-  defaultProductSlug,
+  defaultProduct = null,
 }: {
-  products: ProductOption[];
-  defaultProductSlug?: string;
+  defaultProduct?: ProductOption | null;
 }) {
   const [state, formAction] = useActionState(createListing, initial);
 
-  const [productId, setProductId] = useState(
-    () => products.find((p) => p.slug === defaultProductSlug)?.id ?? ""
-  );
+  const [selected, setSelected] = useState<ProductOption | null>(defaultProduct);
   const [price, setPrice] = useState("");
-
-  const selected = useMemo(
-    () => products.find((p) => p.id === productId),
-    [products, productId]
-  );
 
   // เทียบราคาที่ตั้งกับราคากลาง เพื่อเตือนว่าตั้งสูง/ต่ำผิดปกติ
   const reference = selected?.market_price ?? selected?.msrp ?? null;
@@ -49,31 +40,19 @@ export default function ListingForm({
 
   return (
     <form action={formAction} className="space-y-5">
-      <input type="hidden" name="product_id" value={productId} />
-
       <div>
-        <label htmlFor="product" className="text-sm font-medium">
-          รุ่นสินค้า <span className="text-red-500">*</span>
-        </label>
-        <select
-          id="product"
-          value={productId}
-          onChange={(e) => setProductId(e.target.value)}
+        <ProductPicker
+          label="รุ่นสินค้า"
           required
-          className={field}
-        >
-          <option value="">— เลือกรุ่น —</option>
-          {products.map((p) => (
-            <option key={p.id} value={p.id}>
-              [{PRODUCT_TYPE_LABEL[p.product_type]}] {p.name} · #{p.product_no}
-            </option>
-          ))}
-        </select>
+          defaultProduct={defaultProduct}
+          onSelect={setSelected}
+        />
         {selected && (
           <p className="mt-1 text-xs text-ink-500">
             ราคาป้ายเปิดตัว {formatPrice(selected.msrp)}
-            {selected.market_price &&
-              ` · ราคากลางตอนนี้ ${formatPrice(selected.market_price)}`}
+            {selected.market_price
+              ? ` · ราคากลางตอนนี้ ${formatPrice(selected.market_price)}`
+              : " · ยังไม่มีราคากลาง (ยังไม่มีใครลงประกาศขายรุ่นนี้)"}
           </p>
         )}
       </div>

@@ -98,6 +98,8 @@ export type Product = {
   product_type: ProductType;
   company_id: string;
   announced_date: string | null;
+  /** ใช้เมื่อรู้แค่ปี ไม่มีวันที่เต็ม (ข้อมูลที่นำเข้าจากภายนอก) */
+  release_year?: number | null;
   status: ProductionStatus;
   msrp: number | null;
   market_price: number | null;

@@ -3,7 +3,8 @@ import type { Metadata } from "next";
 import CategoryFilters from "@/components/category-filters";
 import ProductCard from "@/components/product-card";
 import SortSelect from "@/components/sort-select";
-import { getBrands, getProducts, type ProductFilters } from "@/lib/queries";
+import Pagination from "@/components/pagination";
+import { getBrands, getProductsPage, type ProductFilters } from "@/lib/queries";
 import { PRODUCT_TYPE_LABEL, type ProductType } from "@/lib/types";
 
 export const metadata: Metadata = { title: "สินค้าทั้งหมด" };
@@ -15,6 +16,7 @@ type SearchParams = Promise<{
   max?: string;
   rating?: string;
   sort?: string;
+  page?: string;
 }>;
 
 export default async function CategoryPage({
@@ -37,10 +39,11 @@ export default async function CategoryPage({
     sort: (sp.sort as ProductFilters["sort"]) ?? "popular",
   };
 
-  const [products, brands] = await Promise.all([
-    getProducts(filters),
+  const [page, brands] = await Promise.all([
+    getProductsPage(filters, Number(sp.page) || 1),
     getBrands(),
   ]);
+  const products = page.items;
 
   const heading = filters.q
     ? `ผลการค้นหา "${filters.q}"`
@@ -60,7 +63,9 @@ export default async function CategoryPage({
             <div>
               <h1 className="text-2xl font-bold">{heading}</h1>
               <p className="mt-1 text-sm text-ink-500">
-                พบ {products.length} รายการ
+                พบ {page.total.toLocaleString("th-TH")} รายการ
+                {page.totalPages > 1 &&
+                  ` · หน้า ${page.page} จาก ${page.totalPages}`}
               </p>
             </div>
             <Suspense fallback={null}>
@@ -76,11 +81,17 @@ export default async function CategoryPage({
               </p>
             </div>
           ) : (
-            <div className="mt-5 grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
-              {products.map((p) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
-            </div>
+            <>
+              <div className="mt-5 grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
+                {products.map((p) => (
+                  <ProductCard key={p.id} product={p} />
+                ))}
+              </div>
+
+              <Suspense fallback={null}>
+                <Pagination page={page.page} totalPages={page.totalPages} />
+              </Suspense>
+            </>
           )}
         </div>
       </div>

@@ -10,15 +10,21 @@ export const BASIC_ROWS: SpecRow[] = [
   { label: "แบรนด์", value: (p) => dash(p.companies?.name) },
   { label: "รหัสสินค้า", value: (p) => p.product_no },
   {
-    label: "วันเปิดตัว",
-    value: (p) =>
-      p.announced_date
-        ? new Date(p.announced_date).toLocaleDateString("th-TH", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          })
-        : "—",
+    label: "เปิดตัว",
+    // มีวันที่เต็มก็แสดงเต็ม ถ้ารู้แค่ปีก็แสดงแค่ปี — ไม่เดาวันที่ที่ไม่มีข้อมูล
+    value: (p) => {
+      if (p.announced_date) {
+        return new Date(p.announced_date).toLocaleDateString("th-TH", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+      }
+      if (p.release_year) {
+        return `ปี ${p.release_year + 543}`;
+      }
+      return "—";
+    },
   },
   {
     label: "สถานะการผลิต",

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 
 import PostForm from "@/components/community/post-form";
-import { getCurrentUser, getProductOptions } from "@/lib/queries";
+import { getCurrentUser } from "@/lib/queries";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
 export const metadata: Metadata = { title: "ตั้งกระทู้" };
@@ -21,7 +21,6 @@ export default async function NewPostPage() {
   const session = await getCurrentUser();
   if (!session) redirect("/login?next=/community/new");
 
-  const products = await getProductOptions();
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
@@ -34,7 +33,7 @@ export default async function NewPostPage() {
       </p>
 
       <div className="mt-6">
-        <PostForm products={products} />
+        <PostForm />
       </div>
     </div>
   );
