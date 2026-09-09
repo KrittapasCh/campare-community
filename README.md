@@ -1,9 +1,9 @@
-# CamPare Community
+# Shopcam
 
 แพลตฟอร์มเปรียบเทียบสเปกกล้องและตลาดซื้อขายมือสอง
 โปรเจกต์รายวิชา **System Analysis and Design**
 
-**เว็บจริง:** https://campare-community.vercel.app
+**เว็บจริง:** https://campare-community.vercel.app  _(ชื่อโดเมนยังเป็นชื่อเดิม — เปลี่ยนได้ที่ Vercel → Settings → General → Project Name)_
 
 **Stack:** Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · Supabase (PostgreSQL + Auth + Storage) · Vercel
 
@@ -35,7 +35,7 @@
 
 **เส้นทางผู้ใช้หลัก:** ค้นหา → เทียบสเปก → ดูรายละเอียดและรีวิว → ใส่ตะกร้า → เลือกวิธีจ่าย → สั่งซื้อ → ดูประวัติ
 
-**ตัวเลขในระบบ:** สินค้า 3,874 รุ่น (กล้อง 3,869) · แบรนด์ 40+ · ตาราง 25 ตาราง · migration 12 ไฟล์
+**ตัวเลขในระบบ:** สินค้า 3,874 รุ่น (กล้อง 3,869) · แบรนด์ 40+ · ตาราง 25 ตาราง · migration 13 ไฟล์
 
 **ตัวกรองในหน้ารวมสินค้า:** ราคา · สถานะการผลิต · ปีที่เปิดตัว · ประเภทสินค้า · แบรนด์ · คะแนนรีวิว
 พร้อมการเรียง 5 แบบและการแบ่งหน้า — กรอง เรียง และนับทั้งหมดทำที่ฐานข้อมูล
@@ -88,6 +88,7 @@ https://supabase.com → **New project**
 | `0010_camera_import_table.sql` | ตารางพักสำหรับ import CSV |
 | `0011_import_camera_database.sql` | แปลง CSV → `companies` + `products` + `camera_specs` |
 | `0012_product_search_columns.sql` | generated column + index สำหรับข้อมูลระดับพันแถว |
+| `0013_fix_shutter_unit.sql` | คืนหน่วยวินาทีให้ค่าชัตเตอร์ช้าสุด |
 
 **ระหว่าง `0010` กับ `0011`** ต้อง import ข้อมูลก่อน:
 Table Editor → ตาราง `camera_import` → **Insert** → **Import data from CSV** →

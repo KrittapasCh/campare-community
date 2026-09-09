@@ -27,7 +27,7 @@ export default async function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-ink-100 bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3">
         <Link href="/" className="shrink-0 text-lg font-bold tracking-tight">
-          Cam<span className="text-brand-400">Pare</span>
+          Shop<span className="text-brand-400">cam</span>
         </Link>
 
         <nav className="hidden items-center gap-1 text-sm font-medium text-ink-600 md:flex">

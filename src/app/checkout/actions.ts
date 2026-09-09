@@ -19,7 +19,7 @@ type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 
 const SHIPPING_FEE = 0; // ส่งฟรีตาม wireframe
 
-/** เลขที่คำสั่งซื้อ เช่น CP-260806-4F2A */
+/** เลขที่คำสั่งซื้อ เช่น SC-260910-4F2A (บิลเก่าที่ออกก่อนเปลี่ยนชื่อยังขึ้นต้น CP-) */
 function makeOrderNo() {
   const d = new Date();
   const ymd =
@@ -27,7 +27,7 @@ function makeOrderNo() {
     String(d.getMonth() + 1).padStart(2, "0") +
     String(d.getDate()).padStart(2, "0");
   const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
-  return `CP-${ymd}-${rand}`;
+  return `SC-${ymd}-${rand}`;
 }
 
 export async function placeOrder(

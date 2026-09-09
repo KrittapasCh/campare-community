@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* CamPare Community palette — accent ส้ม #F5A623 */
+  /* Shopcam palette — accent ส้ม #F5A623 */
   --color-brand-50: #fff8ec;
   --color-brand-100: #ffeecd;
   --color-brand-200: #ffd995;

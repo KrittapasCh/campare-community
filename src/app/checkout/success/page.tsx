@@ -28,7 +28,7 @@ export default async function CheckoutSuccessPage({
 
       <h1 className="mt-5 text-2xl font-bold">สั่งซื้อสำเร็จ</h1>
       <p className="mt-2 text-sm text-ink-500">
-        ขอบคุณที่ใช้บริการ CamPare Community
+        ขอบคุณที่ใช้บริการ Shopcam
       </p>
 
       {sp.order && (

@@ -13,8 +13,8 @@ const plex = IBM_Plex_Sans_Thai({
 
 export const metadata: Metadata = {
   title: {
-    default: "CamPare Community — เปรียบเทียบและซื้อขายกล้อง",
-    template: "%s | CamPare Community",
+    default: "Shopcam — เปรียบเทียบและซื้อขายกล้อง",
+    template: "%s | Shopcam",
   },
   description:
     "แพลตฟอร์มเปรียบเทียบสเปกกล้อง 2–4 รุ่นแบบ side-by-side พร้อมตลาดมือสอง รีวิว แกลเลอรีภาพตัวอย่าง และคอมมูนิตี้ถาม-ตอบ",

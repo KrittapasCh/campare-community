@@ -21,7 +21,7 @@ export default async function LoginPage({
     <div className="mx-auto flex max-w-md flex-col px-4 py-14">
       <h1 className="text-2xl font-bold">เข้าสู่ระบบ</h1>
       <p className="mt-1 text-sm text-ink-500">
-        ยินดีต้อนรับกลับสู่ CamPare Community
+        ยินดีต้อนรับกลับสู่ Shopcam
       </p>
 
       {sp.error === "auth_callback_failed" && (

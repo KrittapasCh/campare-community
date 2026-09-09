@@ -18,9 +18,9 @@ const FEATURES = [
 export default function AboutPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
-      <h1 className="text-3xl font-bold">เกี่ยวกับ CamPare Community</h1>
+      <h1 className="text-3xl font-bold">เกี่ยวกับ Shopcam</h1>
       <p className="mt-4 leading-relaxed text-ink-600">
-        CamPare Community เป็นแพลตฟอร์มสำหรับคนที่กำลังเลือกซื้อกล้อง
+        Shopcam เป็นแพลตฟอร์มสำหรับคนที่กำลังเลือกซื้อกล้อง
         โจทย์หลักคือทำให้การเทียบสเปกระหว่างรุ่นเข้าใจง่ายขึ้น
         โดยไม่ต้องเปิดหลายแท็บแล้วไล่อ่านเอง
         และเชื่อมข้อมูลสเปกเข้ากับราคามือสองจริงในตลาด

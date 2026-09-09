@@ -10,7 +10,7 @@ const METHODS = [
   { value: "mobile_banking", label: "Mobile Banking", icon: "📱", note: "โอนผ่านแอปธนาคาร" },
   { value: "cash", label: "เงินสด", icon: "💵", note: "ชำระตอนนัดรับ" },
   { value: "credit_debit_card", label: "บัตรเครดิต/เดบิต", icon: "💳", note: "Visa · Mastercard" },
-  { value: "coin", label: "CamPare Coin", icon: "🪙", note: "เหรียญในระบบ" },
+  { value: "coin", label: "Shopcam Coin", icon: "🪙", note: "เหรียญในระบบ" },
 ] as const;
 
 export default function CheckoutForm() {

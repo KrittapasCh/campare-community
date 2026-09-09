@@ -6,7 +6,7 @@ export default function SiteFooter() {
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <p className="text-lg font-bold">
-            Cam<span className="text-brand-400">Pare</span> Community
+            Shop<span className="text-brand-400">cam</span>
           </p>
           <p className="mt-2 text-sm leading-relaxed text-ink-500">
             เปรียบเทียบสเปกกล้องแบบ side-by-side ซื้อขายมือสอง
@@ -45,7 +45,7 @@ export default function SiteFooter() {
       </div>
 
       <div className="border-t border-ink-200 py-4 text-center text-xs text-ink-400">
-        © {new Date().getFullYear()} CamPare Community
+        © {new Date().getFullYear()} Shopcam
       </div>
     </footer>
   );

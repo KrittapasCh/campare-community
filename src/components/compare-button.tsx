@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-const KEY = "campare:compare";
+const KEY = "shopcam:compare";
 const MAX = 4;
 
 function readList(): string[] {
