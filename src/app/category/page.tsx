@@ -17,6 +17,8 @@ type SearchParams = Promise<{
   rating?: string;
   sort?: string;
   page?: string;
+  status?: string;
+  year?: string;
 }>;
 
 export default async function CategoryPage({
@@ -36,6 +38,8 @@ export default async function CategoryPage({
       : undefined,
     maxPrice: sp.max ? Number(sp.max) : undefined,
     minRating: sp.rating ? Number(sp.rating) : undefined,
+    status: sp.status as ProductFilters["status"],
+    minYear: sp.year ? Number(sp.year) : undefined,
     sort: (sp.sort as ProductFilters["sort"]) ?? "popular",
   };
 

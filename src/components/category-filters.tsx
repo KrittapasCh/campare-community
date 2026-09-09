@@ -21,6 +21,9 @@ export default function CategoryFilters({ brands }: { brands: Company[] }) {
     (mutate: (p: URLSearchParams) => void) => {
       const next = new URLSearchParams(params.toString());
       mutate(next);
+      // เปลี่ยนตัวกรองแล้วต้องกลับไปหน้า 1 เสมอ
+      // ไม่งั้นค้างอยู่หน้า 120 ของผลลัพธ์เดิมที่อาจมีแค่ 3 หน้า
+      next.delete("page");
       router.push(`/category?${next.toString()}`);
     },
     [params, router]
@@ -29,6 +32,8 @@ export default function CategoryFilters({ brands }: { brands: Company[] }) {
   const activeType = params.get("type");
   const activeBrands = params.getAll("brand");
   const minRating = params.get("rating");
+  const activeStatus = params.get("status");
+  const activeYear = params.get("year") ?? "";
 
   return (
     <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
@@ -73,6 +78,57 @@ export default function CategoryFilters({ brands }: { brands: Company[] }) {
             ไม่เกิน {formatPrice(maxPrice)}
           </span>
         </div>
+      </section>
+
+      {/* สถานะการผลิต */}
+      <section className="rounded-card border border-ink-100 p-4">
+        <p className="text-sm font-semibold">สถานะการผลิต</p>
+        <div className="mt-3 space-y-1">
+          {[
+            ["", "ทั้งหมด"],
+            ["in_production", "ยังผลิตอยู่"],
+            ["discontinued", "เลิกผลิตแล้ว"],
+          ].map(([value, label]) => (
+            <label
+              key={value || "all"}
+              className="flex cursor-pointer items-center gap-2 text-sm text-ink-600"
+            >
+              <input
+                type="radio"
+                name="status"
+                checked={(activeStatus ?? "") === value}
+                onChange={() =>
+                  push((p) => (value ? p.set("status", value) : p.delete("status")))
+                }
+                className="accent-brand-400"
+              />
+              {label}
+            </label>
+          ))}
+        </div>
+        <p className="mt-2 text-xs text-ink-400">
+          คลังข้อมูลครอบคลุมกล้องตั้งแต่ปี 1994 จึงมีรุ่นที่เลิกผลิตแล้วเป็นส่วนใหญ่
+        </p>
+      </section>
+
+      {/* ปีที่เปิดตัว */}
+      <section className="rounded-card border border-ink-100 p-4">
+        <p className="text-sm font-semibold">ปีที่เปิดตัว</p>
+        <select
+          value={activeYear}
+          onChange={(e) =>
+            push((p) =>
+              e.target.value ? p.set("year", e.target.value) : p.delete("year")
+            )
+          }
+          className="mt-3 w-full rounded-lg border border-ink-200 bg-white px-3 py-2 text-sm outline-none focus:border-brand-400"
+        >
+          <option value="">ทุกปี</option>
+          <option value="2020">ปี 2020 ขึ้นไป</option>
+          <option value="2015">ปี 2015 ขึ้นไป</option>
+          <option value="2010">ปี 2010 ขึ้นไป</option>
+          <option value="2000">ปี 2000 ขึ้นไป</option>
+        </select>
       </section>
 
       {/* ประเภท */}

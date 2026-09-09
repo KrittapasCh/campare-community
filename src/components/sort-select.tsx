@@ -22,6 +22,7 @@ export default function SortSelect() {
         onChange={(e) => {
           const next = new URLSearchParams(params.toString());
           next.set("sort", e.target.value);
+          next.delete("page"); // เปลี่ยนการเรียงแล้วต้องกลับไปหน้า 1
           router.push(`/category?${next.toString()}`);
         }}
         className="rounded-lg border border-ink-200 bg-white px-3 py-2 text-sm text-ink-800 outline-none focus:border-brand-400"

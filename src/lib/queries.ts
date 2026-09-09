@@ -10,6 +10,7 @@ import type {
   Listing,
   Product,
   ProductOption,
+  ProductionStatus,
   ProductType,
   Review,
 } from "@/lib/types";
@@ -46,6 +47,10 @@ export type ProductFilters = {
   minPrice?: number;
   maxPrice?: number;
   minRating?: number;
+  /** สถานะการผลิต — ยังผลิตอยู่ / เลิกผลิตแล้ว */
+  status?: ProductionStatus;
+  /** เอาเฉพาะรุ่นที่เปิดตัวตั้งแต่ปีนี้เป็นต้นไป */
+  minYear?: number;
   sort?: "popular" | "price_asc" | "price_desc" | "newest" | "rating";
 };
 
@@ -82,6 +87,12 @@ function applyFiltersLocally(items: Product[], f: ProductFilters) {
     out = out.filter((p) => displayPrice(p) <= f.maxPrice!);
   if (f.minRating !== undefined)
     out = out.filter((p) => p.avg_rating >= f.minRating!);
+  if (f.status) out = out.filter((p) => p.status === f.status);
+  if (f.minYear !== undefined)
+    out = out.filter((p) => {
+      const y = p.release_year ?? (p.announced_date ? new Date(p.announced_date).getFullYear() : null);
+      return y !== null && y >= f.minYear!;
+    });
 
   const sorted = [...out];
   switch (f.sort) {
@@ -136,6 +147,11 @@ function buildProductQuery(
   if (f.minRating !== undefined) query = query.gte("avg_rating", f.minRating);
   if (f.minPrice !== undefined) query = query.gte("display_price", f.minPrice);
   if (f.maxPrice !== undefined) query = query.lte("display_price", f.maxPrice);
+  if (f.status) query = query.eq("status", f.status);
+  // กรองด้วย released_on ไม่ใช่ release_year เพราะสินค้าบางรุ่นรู้วันที่เต็ม
+  // แต่ไม่มี release_year — released_on ครอบทั้งสองแบบ
+  if (f.minYear !== undefined)
+    query = query.gte("released_on", `${f.minYear}-01-01`);
 
   switch (f.sort) {
     case "price_asc":

@@ -13,10 +13,15 @@ const nextConfig: NextConfig = {
         : []),
       // รูปกล้องจาก CameraDatabase (MIT) เสิร์ฟผ่าน jsDelivr ซึ่งเป็น CDN
       // สำหรับไฟล์ใน GitHub โดยเฉพาะ — ไม่ต้องอัป 3,858 ไฟล์ขึ้น Storage เอง
+      //
+      // pathname จับคู่ทีละส่วนที่คั่นด้วย / — ** ใช้แทนได้หลายส่วน
+      // แต่ต้องอยู่เป็นส่วนของตัวเอง เขียน "CameraDatabase@**" ติดกันไม่ได้
+      // path จริงคือ /gh/leavestylecode/CameraDatabase@main/data/images/xxx.jpg
+      // ส่วนที่ 3 เปลี่ยนไปตาม branch หรือ commit จึงจำกัดได้แค่ถึงชื่อเจ้าของ
       {
         protocol: "https",
         hostname: "cdn.jsdelivr.net",
-        pathname: "/gh/leavestylecode/CameraDatabase@**",
+        pathname: "/gh/leavestylecode/**",
       },
       // รูปตัวอย่างตอน dev (placehold.co ถูกเอาออกแล้ว เพราะส่ง SVG มาซึ่ง next/image บล็อก
       // ตอนนี้ใช้ ProductThumb วาด placeholder เองแทน)
