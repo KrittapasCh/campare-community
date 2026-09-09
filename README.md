@@ -1,73 +1,130 @@
 # CamPare Community
 
-แพลตฟอร์มเปรียบเทียบสเปกกล้อง + ตลาดมือสอง (โปรเจกต์รายวิชา System Analysis and Design)
+แพลตฟอร์มเปรียบเทียบสเปกกล้องและตลาดซื้อขายมือสอง
+โปรเจกต์รายวิชา **System Analysis and Design**
 
-**Stack:** Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · Supabase · Vercel
+**เว็บจริง:** https://campare-community.vercel.app
+
+**Stack:** Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · Supabase (PostgreSQL + Auth + Storage) · Vercel
 
 ---
 
-## เริ่มใช้งาน (3 ขั้น)
+## สารบัญ
 
-### 1. ติดตั้งและรัน
+1. [ภาพรวมระบบ](#ภาพรวมระบบ)
+2. [เริ่มใช้งาน](#เริ่มใช้งาน)
+3. [ตั้งค่า Supabase](#ตั้งค่า-supabase)
+4. [Deploy ขึ้น Vercel](#deploy-ขึ้น-vercel)
+5. [โครงสร้างโปรเจกต์](#โครงสร้างโปรเจกต์)
+6. [ความสอดคล้องกับ Requirement](#ความสอดคล้องกับ-requirement)
+7. [การออกแบบฐานข้อมูล](#การออกแบบฐานข้อมูล)
+8. [ความปลอดภัย](#ความปลอดภัย)
+9. [ประสิทธิภาพ](#ประสิทธิภาพ)
+10. [แหล่งข้อมูลและลิขสิทธิ์](#แหล่งข้อมูลและลิขสิทธิ์)
+11. [ข้อจำกัดและสิ่งที่ยังไม่ได้ทำ](#ข้อจำกัดและสิ่งที่ยังไม่ได้ทำ)
+
+---
+
+## ภาพรวมระบบ
+
+ปัญหาที่แก้: คนที่กำลังเลือกซื้อกล้องต้องเปิดหลายเว็บพร้อมกันเพื่อเทียบสเปก
+แล้วยังต้องไปหาราคามือสองจากอีกที่หนึ่ง ไม่มีที่ไหนรวมทั้งสองอย่างไว้ด้วยกัน
+
+ระบบนี้รวมสามอย่างเข้าด้วยกัน — **ฐานข้อมูลสเปก** จากกล้อง 3,860 รุ่น
+**ตลาดมือสอง** ที่ทำให้ราคากลางเกิดจากประกาศจริง และ **คอมมูนิตี้** ที่ให้คนใช้จริงรีวิวและตอบคำถาม
+
+**เส้นทางผู้ใช้หลัก:** ค้นหา → เทียบสเปก → ดูรายละเอียดและรีวิว → ใส่ตะกร้า → เลือกวิธีจ่าย → สั่งซื้อ → ดูประวัติ
+
+**ตัวเลขในระบบ:** สินค้า 3,874 รุ่น · แบรนด์ 40+ · ตาราง 25 ตาราง · migration 12 ไฟล์
+
+---
+
+## เริ่มใช้งาน
 
 ```bash
 npm install
 npm run dev
 ```
 
-เปิด http://localhost:3000 — ตอนนี้เว็บจะรันด้วย **ข้อมูลตัวอย่าง** (mock) ได้เลย ยังไม่ต้องมี Supabase
+เปิด http://localhost:3000
 
-### 2. สร้าง Supabase project
+เว็บจะ**รันได้ทันทีโดยยังไม่ต้องมี Supabase** — ระบบจะใช้ข้อมูลตัวอย่างในเครื่องแทน
+และขึ้นแถบสีส้มบอกว่ากำลังอยู่ในโหมดนั้น ออกแบบไว้แบบนี้เพื่อให้แยกได้ว่า
+"โค้ดมีปัญหา" กับ "ฐานข้อมูลยังไม่ได้ตั้งค่า" เป็นคนละเรื่องกัน
 
-1. ไปที่ https://supabase.com → New project
+---
 
-   **จำ region ที่เลือกไว้ให้ดี** แล้วตั้ง `regions` ใน `vercel.json` ให้ตรงกัน
-   ปัจจุบันใช้ Northeast Asia (Seoul) → `vercel.json` ตั้งเป็น `icn1`
-   ถ้าเซิร์ฟเวอร์กับฐานข้อมูลอยู่คนละทวีป หน้าเว็บจะช้าขึ้นเป็นวินาที
+## ตั้งค่า Supabase
 
-2. เข้า **SQL Editor** แล้วรันไฟล์ตามลำดับ ห้ามข้าม:
+### 1. สร้างโปรเจกต์
 
-   | ไฟล์ | ได้อะไร |
-   |---|---|
-   | `0001_schema.sql` | ตาราง 25 ตัว, enum, trigger, view |
-   | `0002_rls.sql` | Row Level Security ทุกตาราง |
-   | `0003_seed.sql` | สินค้าตัวอย่าง 14 รายการ |
-   | `0004_fix_signup_trigger.sql` | แก้ username ซ้ำตอนสมัคร + รองรับ OAuth |
-   | `0005_view_security_invoker.sql` | ปิดช่องโหว่ security definer ของ view |
-   | `0006_demo_marketplace.sql` | ประกาศขาย + รีวิวตัวอย่าง (ต้องมี user ก่อน) |
-   | `0007_storage_gallery.sql` | bucket `gallery` + policy อัปโหลดรูป |
-   | `0008_notifications.sql` | trigger แจ้งเตือนผู้ใช้ |
-   | `0009_notify_admins.sql` | trigger แจ้งเตือนผู้ดูแลเมื่อมีของรอตรวจ |
+https://supabase.com → **New project**
 
-   `0006` ต้องสมัครสมาชิกผ่านหน้าเว็บอย่างน้อย 1 คนก่อนถึงจะรันได้
+> **region สำคัญ** — ต้องตั้ง `regions` ใน `vercel.json` ให้ตรงกัน
+> ปัจจุบันใช้ Northeast Asia (Seoul) → `vercel.json` เป็น `icn1`
+> ถ้าเซิร์ฟเวอร์กับฐานข้อมูลอยู่คนละทวีป หน้าเว็บจะช้าขึ้นเป็นวินาที (ดู [ประสิทธิภาพ](#ประสิทธิภาพ))
 
-3. คัดลอก `.env.example` เป็น `.env.local` แล้วใส่ค่าจาก **Project Settings → API**:
+### 2. รัน migration ตามลำดับ
+
+**SQL Editor** → **New query** → วางทีละไฟล์ → **Run** — ห้ามข้ามและห้ามสลับลำดับ
+
+| ไฟล์ | ได้อะไร |
+|---|---|
+| `0001_schema.sql` | ตาราง 25 ตัว, enum, trigger, view |
+| `0002_rls.sql` | Row Level Security ทุกตาราง |
+| `0003_seed.sql` | สินค้าตัวอย่าง 14 รายการ |
+| `0004_fix_signup_trigger.sql` | แก้ username ซ้ำตอนสมัคร + รองรับ OAuth |
+| `0005_view_security_invoker.sql` | ปิดช่องโหว่ security definer ของ view |
+| `0006_demo_marketplace.sql` | ประกาศขาย + รีวิวตัวอย่าง — **ต้องมีผู้ใช้ในระบบก่อน** |
+| `0007_storage_gallery.sql` | bucket `gallery` + policy อัปโหลดรูป |
+| `0008_notifications.sql` | trigger แจ้งเตือนผู้ใช้ |
+| `0009_notify_admins.sql` | trigger แจ้งเตือนผู้ดูแลเมื่อมีของรอตรวจ |
+| `0010_camera_import_table.sql` | ตารางพักสำหรับ import CSV |
+| `0011_import_camera_database.sql` | แปลง CSV → `companies` + `products` + `camera_specs` |
+| `0012_product_search_columns.sql` | generated column + index สำหรับข้อมูลระดับพันแถว |
+
+**ระหว่าง `0010` กับ `0011`** ต้อง import ข้อมูลก่อน:
+Table Editor → ตาราง `camera_import` → **Insert** → **Import data from CSV** →
+เลือก `data/camera_data.csv` → ตรวจว่าได้ 3,860 แถวด้วย `select count(*) from camera_import;`
+
+### 3. ใส่ค่าเชื่อมต่อ
+
+คัดลอก `.env.example` เป็น `.env.local` แล้วเติมค่าจาก **Project Settings → API**
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 ```
 
-4. รีสตาร์ท `npm run dev` — แถบ "กำลังแสดงข้อมูลตัวอย่าง" จะหายไป แปลว่าต่อ DB ติดแล้ว
+รีสตาร์ท `npm run dev` — แถบสีส้มหายไปแปลว่าต่อติดแล้ว
 
-### 3. Deploy ขึ้น Vercel
+### 4. ตั้ง admin คนแรก
 
-```bash
-npx vercel
+สมัครสมาชิกผ่านหน้าเว็บก่อน แล้วรันใน SQL Editor
+
+```sql
+update profiles set role = 'admin' where email = 'อีเมลของคุณ';
 ```
 
-หรือ push ขึ้น GitHub แล้ว Import repo ที่ https://vercel.com/new
+คนถัด ๆ ไปตั้งผ่านหน้า `/admin/users` ได้เลย
 
-ใน Vercel ต้องใส่ Environment Variables 2 ตัวเหมือนใน `.env.local`
-(Settings → Environment Variables → เลือกครบทั้ง Production/Preview/Development)
+---
 
-จากนั้นกลับไปที่ Supabase → **Authentication → URL Configuration**
-เพิ่ม URL ของ Vercel ลงใน **Redirect URLs**:
+## Deploy ขึ้น Vercel
 
-```
-https://ชื่อโปรเจกต์.vercel.app/auth/callback
-http://localhost:3000/auth/callback
-```
+push ขึ้น GitHub แล้ว Import ที่ https://vercel.com/new
+
+**ก่อนกด Deploy** ใส่ Environment Variables ให้ครบทั้ง Production / Preview / Development
+
+> ตัวแปรที่ขึ้นต้นด้วย `NEXT_PUBLIC_` ถูกฝังเข้าไปในโค้ดตอน build ไม่ใช่อ่านตอนรัน
+> ถ้าเพิ่มทีหลังต้อง **Redeploy** ถึงจะมีผล
+
+จากนั้น Supabase → **Authentication → URL Configuration**
+
+- **Site URL**: `https://ชื่อโปรเจกต์.vercel.app`
+- **Redirect URLs**: `https://ชื่อโปรเจกต์.vercel.app/**` และ `http://localhost:3000/**`
+
+ไม่ตั้งข้อนี้ = ล็อกอินบนเว็บจริงจะเด้งกลับ localhost
 
 ---
 
@@ -76,49 +133,84 @@ http://localhost:3000/auth/callback
 ```
 src/
 ├── app/
-│   ├── page.tsx              หน้าแรก — hero, ประเภทสินค้า, สินค้าแนะนำ, แบรนด์
-│   ├── category/             หน้ารวมสินค้า + ตัวกรอง (ราคา/ประเภท/แบรนด์/คะแนน)
-│   ├── product/[slug]/       หน้ารายละเอียดสินค้า — สเปก, ประกาศขาย, รีวิว
-│   ├── compare/              เปรียบเทียบ 2–4 รุ่น side-by-side
-│   ├── login/ register/      หน้าสมัคร/เข้าสู่ระบบ (+ Google, Facebook)
-│   ├── profile/              โปรไฟล์ 4 แท็บ: ข้อมูล, ประวัติซื้อ, รีวิว, รายการโปรด
-│   ├── about/                อธิบายฟังก์ชันทั้ง 10 ข้อตาม requirement
-│   └── auth/                 server actions + OAuth callback
-├── components/               UI ที่ใช้ซ้ำ (card, filter, header, footer, ปุ่ม)
+│   ├── page.tsx                  หน้าแรก
+│   ├── category/                 รวมสินค้า + ตัวกรอง + แบ่งหน้า
+│   ├── product/[slug]/           รายละเอียด — สเปก ประกาศขาย รีวิว
+│   ├── compare/                  เทียบ 2–4 รุ่น side-by-side
+│   ├── sell/                     ลงประกาศขาย
+│   ├── cart/ checkout/           ตะกร้า + ชำระเงิน (จำลอง)
+│   ├── gallery/                  แกลเลอรีภาพตัวอย่าง + อัปโหลด
+│   ├── community/                กระทู้ถาม-ตอบ
+│   ├── notifications/            การแจ้งเตือน
+│   ├── profile/                  โปรไฟล์ 5 แท็บ
+│   ├── admin/                    ภาพรวม · ตรวจเนื้อหา · รายงาน · สินค้า · สมาชิก
+│   ├── api/products/search/      ค้นหาสินค้าสำหรับช่องเลือกรุ่น
+│   └── auth/                     server action + OAuth callback
+├── components/                   UI ที่ใช้ซ้ำ
 ├── lib/
-│   ├── supabase/             client ฝั่ง browser / server / middleware
-│   ├── queries.ts            ชั้นดึงข้อมูล — ถ้ายังไม่ต่อ DB จะ fallback เป็น mock อัตโนมัติ
-│   ├── specs.ts              นิยามแถวสเปกที่ใช้ทั้งหน้า detail และหน้า compare
-│   ├── types.ts              type + คำแปลไทยของ enum
-│   └── mock-data.ts          ข้อมูลตัวอย่าง (ตรงกับ 0003_seed.sql)
-└── middleware.ts             รีเฟรช session + กันหน้าที่ต้องล็อกอิน
+│   ├── supabase/                 client ฝั่ง browser / server / middleware
+│   ├── queries.ts                ชั้นดึงข้อมูล (fallback เป็น mock อัตโนมัติ)
+│   ├── specs.ts                  นิยามแถวสเปก ใช้ร่วมกันระหว่างหน้า detail กับ compare
+│   ├── admin.ts                  requireAdmin() + สถิติหน้าผู้ดูแล
+│   └── types.ts                  type + คำแปลไทยของ enum
+├── middleware.ts                 รีเฟรช session + กันหน้าที่ต้องล็อกอิน
+└── supabase/migrations/          SQL ทั้งหมด เรียงตามลำดับการรัน
 ```
 
 ---
 
-## หมายเหตุเรื่องฐานข้อมูล (สำหรับทีม Database)
+## ความสอดคล้องกับ Requirement
 
-ประเด็นออกแบบที่ใส่ไว้แล้วใน `0001_schema.sql`:
+| # | Requirement | หน้า / ไฟล์ | ตารางที่เกี่ยวข้อง | สถานะ |
+|---|---|---|---|---|
+| 1 | User Management | `/register` `/login` `/profile` `/admin/users` | `profiles`, `auth.users` | ครบ |
+| 2 | Product Database | `/category` `/product/[slug]` | `products`, `camera_specs`, `lens_specs`, `companies` | ครบ |
+| 3 | Compare System | `/compare` | `compare_sets`, `compare_items` | ครบ |
+| 4 | Sample Gallery | `/gallery` `/gallery/upload` | `gallery_photos`, `comments` | ครบ |
+| 5 | Review System | ในหน้า `/product/[slug]` | `reviews` | ครบ |
+| 6 | Marketplace | `/sell` `/cart` `/checkout` | `listings`, `carts`, `orders`, `order_items` | ครบ (ยกเว้นกราฟแนวโน้มราคา) |
+| 7 | Favorite / Wishlist | ปุ่มหัวใจ + `/profile?tab=favourite` | `wishlists`, `wishlist_items` | ครบ |
+| 8 | Community | `/community` | `community_posts`, `comments` | ครบ |
+| 9 | Notification | `/notifications` + กระดิ่งบน header | `notifications` | ครบ |
+| 10 | Admin | `/admin` และหน้าย่อย | ทุกตาราง ผ่าน `is_admin()` | ครบ |
 
-- **Header–detail** — `orders` (หัวบิล) แยกจาก `order_items` (รายการในบิล) แทนที่จะยัดรวมตารางเดียว
-- **Polymorphic reference** — `comments` และ `reports` ใช้ `target_type` + `target_id`
-  ชี้ไปได้ทั้งโพสต์ รูป รีวิว หรือผู้ใช้ โดยไม่ต้องสร้างตารางแยกต่อชนิด
-- **Subtype tables** — `products` เป็นตารางแม่ ส่วน `camera_specs` / `lens_specs` / `tripod_specs` ฯลฯ
-  เป็น 1:1 ตามประเภท ทำให้ไม่มีคอลัมน์ว่างเปล่าเต็มตาราง
-- **Soft delete** — ใช้ `is_deleted` แทนการลบจริง เพื่อไม่ให้ FK พัง
-- **สภาพ/ประกันอยู่ที่ระดับ listing** ไม่ใช่ระดับรุ่นสินค้า — `warranty_expire_date` เก็บเป็น `date`
-- **ไม่แยกตารางตามสถานะ** (เช่น active/completed) เพราะไม่ประหยัดพื้นที่และทำให้ FK ยุ่ง
-- **`product_market_price`** เป็น view คำนวณราคากลาง/ต่ำสุด/สูงสุดจากประกาศที่ยัง active
+---
 
-### สร้าง admin คนแรก
+## การออกแบบฐานข้อมูล
 
-หลังสมัครสมาชิกผ่านหน้าเว็บแล้ว รันใน SQL Editor:
+ประเด็นที่ตัดสินใจไว้อย่างตั้งใจ พร้อมเหตุผล
 
-```sql
-update profiles set role = 'admin' where email = 'อีเมลของคุณ';
-```
+**Surrogate key** — ทุกตารางใช้ `uuid` เป็น primary key ไม่ใช้ค่าที่มีความหมายจริง
+เพราะค่าที่มีความหมายเปลี่ยนได้ (Olympus เปลี่ยนชื่อธุรกิจกล้องเป็น OM System ปี 2021
+ถ้าใช้ชื่อเป็น PK ต้องไล่แก้ทุกตารางที่อ้างถึง)
 
-### generate TypeScript types จาก schema จริง
+**Subtype tables** — `products` เป็นตารางแม่ ส่วน `camera_specs` / `lens_specs` /
+`tripod_specs` เป็น 1:1 แยกตามประเภท เพราะกล้องกับขาตั้งแทบไม่มีคอลัมน์ร่วมกันเลย
+ถ้ารวมเป็นตารางเดียวจะได้ตารางที่ว่างเป็นส่วนใหญ่
+
+**Header–detail** — `orders` (หัวบิล) แยกจาก `order_items` (รายการในบิล)
+และ `order_items` เก็บ**สำเนา**ชื่อกับราคา ณ เวลาสั่งซื้อ ไม่ใช่ join กลับไปที่ประกาศ
+เพราะถ้าผู้ขายแก้ประกาศทีหลัง บิลเก่าต้องไม่เปลี่ยนตาม
+
+**Polymorphic reference** — `comments` และ `reports` ใช้ `target_type` + `target_id`
+ชี้ไปได้ทั้งโพสต์ รูป รีวิว หรือผู้ใช้ แทนที่จะสร้าง `photo_comments` กับ `post_comments`
+ที่หน้าตาเหมือนกันเป๊ะ แลกกับการที่ foreign key บังคับความถูกต้องให้ไม่ได้
+
+**Soft delete** — ใช้ `is_deleted` แทนการลบจริง เพราะประกาศขายและรีวิวเก่ายังอ้างถึงแถวนั้นอยู่
+
+**ตำแหน่งของ attribute** — สภาพสินค้าและวันหมดประกันอยู่ที่ `listings` (ของชิ้นนั้น)
+ไม่ใช่ `products` (รุ่นสินค้า) เพราะกล้องรุ่นเดียวกันสองตัวมีสภาพต่างกันได้
+
+**ไม่แยกตารางตามสถานะ** — ไม่มี `active_listings` กับ `sold_listings` แยกกัน
+เพราะไม่ประหยัดพื้นที่ ทำให้ query ซ้ำซ้อน และ FK พังเวลาแถวย้ายตาราง
+
+**Generated column** — `display_price` และ `released_on` คำนวณอัตโนมัติจากคอลัมน์อื่น
+เก็บค่าไว้จริงจึงทำ index ได้ ใช้กรองและเรียงที่ฐานข้อมูลแทนที่จะลากข้อมูลมากรองในโค้ด
+
+**Trigger** — คะแนนเฉลี่ยของสินค้า การสร้าง `profiles` ตอนสมัคร และการแจ้งเตือนทั้งหมด
+ทำที่ฐานข้อมูล ไม่ใช่ในโค้ดแอป เพื่อให้ทำงานเสมอไม่ว่าข้อมูลจะเข้ามาทางไหน
+
+### สร้าง TypeScript type จาก schema จริง
 
 ```bash
 npx supabase login
@@ -128,15 +220,78 @@ npm run types
 
 ---
 
-## สถานะ
+## ความปลอดภัย
 
-ครบทั้ง 10 functional requirements แล้ว — User Management, Product Database,
-Compare System, Sample Gallery, Review System, Marketplace, Favorite/Wishlist,
-Community, Notification, Admin
+ป้องกันเป็นชั้น ๆ ไม่พึ่งชั้นใดชั้นหนึ่ง
 
-### ไอเดียต่อยอด (ถ้ามีเวลาเหลือ)
+| ชั้น | วิธี |
+|---|---|
+| รหัสผ่าน | ไม่เก็บเอง — อยู่ใน `auth.users` ของ Supabase เป็น **bcrypt hash** (ย้อนกลับไม่ได้) |
+| ข้อมูลในตาราง | **RLS ทุกตาราง** — เปิดไว้แล้วเขียน policy ว่าใครเห็นแถวไหน |
+| สิทธิ์พิเศษ | `SECURITY DEFINER` เฉพาะที่จำเป็น (การแจ้งเตือนข้ามผู้ใช้) |
+| ไฟล์อัปโหลด | Storage policy ผูกพาธกับ `auth.uid()` — เขียนได้เฉพาะโฟลเดอร์ตัวเอง |
+| การกระทำ | ทุก server action เช็คสิทธิ์ซ้ำ ไม่เชื่อว่า UI ซ่อนปุ่มแล้วจะปลอดภัย |
 
-- [ ] AI วิเคราะห์ว่ารุ่นไหนคุ้มกว่าจากสเปก + ราคากลาง
-- [ ] กราฟแนวโน้มราคามือสองย้อนหลัง
-- [ ] แชทระหว่างผู้ซื้อ-ผู้ขาย
-- [ ] Realtime notification ด้วย Supabase Realtime (ตอนนี้อัปเดตตอนโหลดหน้า)
+> **anon key เปิดเผยได้** เพราะมันไม่ใช่รหัสผ่าน แต่เป็นบัตรผ่านประตู
+> ส่วนตู้เซฟข้างในล็อกด้วย RLS อีกชั้น — `service_role` key ต่างหากที่ห้ามหลุด
+> เพราะข้าม RLS ได้ทั้งหมด จึงไม่มี `NEXT_PUBLIC_` นำหน้า
+
+> **ข้อควรระวังตอนทดสอบ** — SQL Editor รันด้วย role `postgres` ซึ่ง **ข้าม RLS**
+> ข้อมูลที่เห็นในนั้นไม่ได้แปลว่าแอปจะเห็นด้วย ต้องทดสอบผ่านหน้าเว็บจริง
+
+---
+
+## ประสิทธิภาพ
+
+สิ่งที่ทำและผลที่ได้ เรียงตามผลกระทบ
+
+**1. วางเซิร์ฟเวอร์ไว้ข้างฐานข้อมูล** — เดิม Vercel รันที่อเมริกาแต่ Supabase อยู่โซล
+ทุก query วิ่งข้ามแปซิฟิกไปกลับ รอบละ 200–400 ms และหนึ่งหน้ายิงหลายรอบ
+ตั้ง `regions: ["icn1"]` ใน `vercel.json` ให้อยู่ศูนย์ข้อมูลเดียวกัน **จากเปลี่ยนหน้า ~2 วินาที เหลือแทบทันที**
+
+**2. แคชการยืนยันตัวตนต่อ request** — `auth.getUser()` ยิงเน็ตทุกครั้งที่เรียก
+และหนึ่งหน้ามีคนเรียก 4-5 ที่ (header, ตะกร้า, กระดิ่ง, ตัวหน้าเอง) ห่อด้วย React `cache()` เหลือรอบเดียว
+
+**3. ดึงเฉพาะที่ใช้** — แยก query เป็นสามระดับ: เต็ม (หน้ารายละเอียด), รายการ (การ์ด),
+เบา (ช่องเลือกรุ่น) เดิมลาก `camera_specs` มาด้วยทุกแถวทั้งที่การ์ดไม่ได้แสดงสเปกสักช่อง
+
+**4. แบ่งหน้าที่ฐานข้อมูล** — เดิมดึง 200 แถวมากรองในโค้ด ซึ่งใช้ได้ตอนมีสินค้า 14 ชิ้น
+แต่พอมี 3,874 ชิ้นจะเห็นไม่ครบ ย้ายการกรอง เรียง และนับไปทำที่ฐานข้อมูลแล้วดึงทีละหน้า
+
+**5. `loading.tsx`** — ไม่ได้เร็วขึ้นจริง แต่แสดงโครงหน้าทันทีที่กดลิงก์
+
+---
+
+## แหล่งข้อมูลและลิขสิทธิ์
+
+ข้อมูลสเปกและรูปกล้องมาจาก
+**[CameraDatabase](https://github.com/leavestylecode/CameraDatabase)** โดย leavestylecode
+เผยแพร่ภายใต้ **MIT License** ใช้ได้ทั้งงานเชิงพาณิชย์และไม่เชิงพาณิชย์
+
+รูปเสิร์ฟผ่าน **jsDelivr** ซึ่งเป็น CDN สำหรับไฟล์ใน GitHub โดยเฉพาะ
+จึงไม่ต้องอัปโหลด 3,858 ไฟล์ขึ้น Supabase Storage เอง
+
+**สิ่งที่อนุมานเพิ่มเอง (ไม่ได้มาจากแหล่งข้อมูล)**
+
+- **สถานะการผลิต** — ชุดข้อมูลไม่ได้ระบุ จึงอนุมานจากปีที่เปิดตัว
+  โดยถือว่าเปิดตัวปี 2022 ขึ้นไป = ยังผลิตอยู่ ที่เหลือ = เลิกผลิตแล้ว
+- **ราคา** — ชุดข้อมูลไม่มีราคา สินค้าจึงไม่มีราคาป้าย
+  ราคาที่แสดงบนเว็บมาจากประกาศขายจริงของผู้ใช้เท่านั้น
+
+---
+
+## ข้อจำกัดและสิ่งที่ยังไม่ได้ทำ
+
+- **ไม่มีการชำระเงินจริง** — หน้า checkout เป็นการจำลอง สร้างคำสั่งซื้อในฐานข้อมูลแต่ไม่ตัดเงิน
+- **ไม่มีกราฟแนวโน้มราคา** (requirement ข้อ 6 บางส่วน) — ระบบคำนวณราคากลางจากประกาศปัจจุบันได้
+  แต่ยังไม่เก็บประวัติราคาย้อนหลัง ต้องเพิ่มตารางบันทึกราคาตามช่วงเวลาก่อน
+- **การแจ้งเตือนไม่ใช่ realtime** — อัปเดตตอนโหลดหน้า ยังไม่ได้ใช้ Supabase Realtime
+- **สินค้าส่วนใหญ่ไม่มีราคาป้าย** จึงกรองด้วยช่วงราคาได้เฉพาะรุ่นที่มีคนลงประกาศแล้ว
+- **ยังไม่มี AI ช่วยวิเคราะห์ความคุ้มค่า** ตามที่ระบุไว้เป็นแนวคิดเสริมในโจทย์
+
+### ไอเดียต่อยอด
+
+- [ ] เก็บประวัติราคาเพื่อทำกราฟแนวโน้ม
+- [ ] AI วิเคราะห์ว่ารุ่นไหนคุ้มกว่าจากสเปกและราคากลาง
+- [ ] แชทระหว่างผู้ซื้อกับผู้ขาย
+- [ ] Realtime notification ด้วย Supabase Realtime

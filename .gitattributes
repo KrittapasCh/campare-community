@@ -1,0 +1,19 @@
+# บังคับให้ไฟล์ข้อความเก็บใน git เป็น LF เสมอ ไม่ว่าใครจะใช้ Windows หรือ Mac
+#
+# ทำไมต้องมี: ทีมที่ใช้คนละ OS จะเจออาการ "ไม่ได้แก้อะไรแต่ git บอกว่าไฟล์เปลี่ยนทั้งไฟล์"
+# เพราะตัวจบบรรทัดต่างกัน ทำให้ diff อ่านไม่รู้เรื่องและ merge ชนกันโดยไม่จำเป็น
+#
+# text=auto  ให้ git ตรวจเองว่าไฟล์ไหนเป็นข้อความ
+# eol=lf     เก็บใน repository เป็น LF (ตอน checkout บน Windows ยังใช้งานได้ปกติ)
+* text=auto eol=lf
+
+# ไฟล์ไบนารี ห้ามแตะตัวจบบรรทัดเด็ดขาด ไม่งั้นไฟล์เสีย
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.webp binary
+*.avif binary
+*.ico  binary
+*.pdf  binary
+*.woff binary
+*.woff2 binary
