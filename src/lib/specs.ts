@@ -2,7 +2,15 @@ import type { Product } from "@/lib/types";
 
 export type SpecRow = { label: string; value: (p: Product) => string };
 
-const yn = (v: boolean | null | undefined) => (v ? "มี" : "ไม่มี");
+/**
+ * แสดงค่า true/false — แต่ต้องแยก "ไม่มี" ออกจาก "ไม่รู้"
+ *
+ * ข้อมูลที่นำเข้าจากภายนอกไม่มีคอลัมน์ IBIS หรือกันละอองน้ำ ค่าจึงเป็น null
+ * ถ้าแปลง null เป็น "ไม่มี" เท่ากับเว็บยืนยันข้อมูลที่ไม่เคยมีใครบอก
+ * เช่น Nikon Z5 II มี IBIS จริง แต่เว็บจะบอกว่าไม่มี
+ */
+const yn = (v: boolean | null | undefined) =>
+  v === null || v === undefined ? "—" : v ? "มี" : "ไม่มี";
 const dash = (v: unknown, suffix = "") =>
   v === null || v === undefined || v === "" ? "—" : `${v}${suffix}`;
 

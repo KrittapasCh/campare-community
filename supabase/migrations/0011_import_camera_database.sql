@@ -120,7 +120,9 @@ select
 
   iso.lo, iso.hi,
 
-  nullif(trim(replace(coalesce(i."Min. shutter speed", ''), ' sec', '')), ''),
+  -- ชัตเตอร์ช้าสุดเป็นวินาที ต้องคงหน่วยไว้ ('30 sec' -> '30s')
+  -- ส่วนเร็วสุดเป็นเศษส่วนอยู่แล้ว ตัดหน่วยได้ ('1/8000 sec' -> '1/8000')
+  nullif(regexp_replace(trim(coalesce(i."Min. shutter speed", '')), '\s*sec$', 's'), ''),
   nullif(trim(replace(coalesce(i."Max. shutter speed", ''), ' sec', '')), ''),
 
   -- ลบ zero-width space ที่ติดมากับค่าวิดีโอบางแถว
