@@ -124,6 +124,23 @@ export default async function ProductPage({ params }: { params: Params }) {
                 {STATUS_LABEL[product.status]}
               </p>
             )}
+
+            {/* แสดงแหล่งอ้างอิงราคาให้ตรวจสอบได้ — ตัวเลขที่ไม่มีที่มาคือตัวเลขที่เชื่อไม่ได้ */}
+            {product.price_source_url && (
+              <p className="mt-2 text-[11px] text-ink-500">
+                ที่มาราคา{" "}
+                <a
+                  href={product.price_source_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-brand-700 underline underline-offset-2 hover:text-brand-800"
+                >
+                  ดูแหล่งอ้างอิง ↗
+                </a>
+                {product.price_checked_at &&
+                  ` · ตรวจสอบเมื่อ ${formatDate(product.price_checked_at)}`}
+              </p>
+            )}
           </div>
 
           {product.summary && (

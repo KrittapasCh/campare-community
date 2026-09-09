@@ -100,6 +100,9 @@ export type Product = {
   announced_date: string | null;
   /** ใช้เมื่อรู้แค่ปี ไม่มีวันที่เต็ม (ข้อมูลที่นำเข้าจากภายนอก) */
   release_year?: number | null;
+  /** URL ที่ใช้อ้างอิงราคา — แสดงบนหน้าสินค้าให้ตรวจสอบได้ */
+  price_source_url?: string | null;
+  price_checked_at?: string | null;
   status: ProductionStatus;
   msrp: number | null;
   market_price: number | null;

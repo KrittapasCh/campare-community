@@ -19,6 +19,7 @@ import type {
 const PRODUCT_FULL_SELECT = `
   id, slug, product_no, name, product_type, company_id, announced_date, release_year, status,
   msrp, market_price, thumbnail_url, summary, best_for, highlight, avg_rating, review_count,
+  price_source_url, price_checked_at,
   companies!inner ( id, name, slug, country, logo_url ),
   camera_specs ( * ),
   lens_specs ( * )
