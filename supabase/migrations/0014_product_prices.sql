@@ -35,7 +35,17 @@ set msrp            = v.price,
 from (values
   ('sony-a7c-ii',     75990, 'https://www.beartai.com/tech/camera/1307581/',        '2026-09-10', 'opened'),
   ('nikon-z6-iii',    94900, 'https://www.digital2home.com/product/nikon-z6-iii-0/', '2026-09-10', 'listed'),
-  ('canon-eos-r6-ii', 82990, 'https://life.th.canon/news-activities-detail.html?id=134', '2026-09-10', 'listed')
+  ('canon-eos-r6-ii', 82990, 'https://life.th.canon/news-activities-detail.html?id=134', '2026-09-10', 'listed'),
+  ('sony-fx2', 95990,'https://www.sony.co.th/th/electronics/interchangeable-lens-cameras/ilme-fx2?sku=d2c%3A42132198752299','2026-09-11','opened'),
+  ('sony-rx1r-iii', 154990,'https://www.sony.co.th/th/electronics/cyber-shot-compact-cameras/dsc-rx1rm3?sku=dsc-rx1rm3-ap2','2026-09-11','opened'),
+  ('sony-a1-ii', 224990, 'https://www.sony.co.th/th/electronics/interchangeable-lens-cameras/ilce-1m2?sku=d2c%3A42507406016555', '2026-09-11', 'opened'),
+  ('sony-zv-e10-ii', 38990, 'https://www.sony.co.th/th/electronics/interchangeable-lens-cameras/zv-e10m2?sku=zv-e10m2-wq-ap2', '2026-09-11', 'opened'),
+  ('sony-a7cr', 103990, 'https://www.sony.co.th/th/interchangeable-lens-cameras/products/ilce-7cr?sku=ilce-7cr-sq-ap2', '2026-09-11', 'opened'),
+  ('sony-a9-iii', 224990, 'https://www.sony.co.th/th/interchangeable-lens-cameras/products/ilce-9m3?sku=d2c%3A41025245773867', '2026-09-11', 'opened'),
+  ('sony-zv-1-mark-ii', 29990, 'https://www.sony.co.th/th/compact-cameras/products/zv-1m2?sku=zv-1m2-bq-e32', '2026-09-11', 'opened'),
+  ('sony-zv-e1', 77990, 'https://www.sony.co.th/th/interchangeable-lens-cameras/products/zv-e1?locale=th_TH&sku=zv-e1-bq-ap2', '2026-09-11', 'opened'),
+  ('sony-a7r-v', 159990, 'https://www.sony.co.th/th/interchangeable-lens-cameras/products/ilce-7rm5?sku=ilce-7rm5-bqap2', '2026-09-11', 'opened'),
+  ('sony-zv-1f', 117990, 'https://www.sony.co.th/th/compact-cameras/products/zv-1f?locale=th_TH&sku=zv-1f-wq-e32', '2026-09-11', 'opened')
 ) as v(slug, price, source, checked, verified)
 where p.slug = v.slug;
 
